@@ -1,0 +1,97 @@
+body {
+	text-align: center;	
+    background-color: #d8d8d8;
+}
+
+#title {
+	color: #383838;
+    font-size: 80px;
+    text-shadow: 3px 3px 5px rgb(49, 49, 49);
+    font-weight: bolder;
+    margin-top: 55px
+}
+
+#question {
+	width: 100%;
+	margin: 0px;
+	font-size: 130px;
+    font-weight: bold;
+
+}
+
+#answer{
+    padding: 0px;
+    /*line-height: 2;*/
+    font-size: 50px;
+}
+
+#answerForm {
+	font-size: 20px;
+}
+
+#answer {
+	width: 60%;
+}
+
+#startButton{
+    width: 150px;
+    height: 50px;
+    background-color: #ff1493;
+    font-weight: bold;
+    color: #fffafa;
+    border-radius: 500px;
+    font-size: 18px;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+#startButton:hover{
+    transform: scale(1.1,1.1);
+}
+
+#progress{
+    font-size: 25px;
+    margin-bottom: 0px
+}
+
+#timer{
+    font-size: 25px;
+    margin-top: 0px
+}
+
+#resultMessage{
+    font-size: 30px;
+}
+
+#feedback{
+    font-size: 30px;
+}
+
+#MI{
+    width: 150px;
+    height: 50px;
+    background-color: #ff1493;
+    font-weight: bold;
+    color: #fffafa;
+    border-radius: 500px;
+    font-size: 18px;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+#MI:hover{
+    transform: scale(1.1,1.1);
+}
+
+#HM{
+    width: 150px;
+    height: 50px;
+    background-color: #ff1493;
+    font-weight: bold;
+    color: #fffafa;
+    border-radius: 500px;
+    font-size: 18px;
+    box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+#HM:hover{
+    transform: scale(1.1,1.1);
+}

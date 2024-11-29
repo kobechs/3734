@@ -1,0 +1,261 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: content: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+    <link rel="stylesheet" href="style.css">
+    <script>
+        // 問題番号
+        let no = 0;
+        // 正解数
+        let score = 0;
+        // タイマー
+        let timer;
+        // 残り時間
+        let timeLeft = 10;
+         // 判定済みかどうか
+        let isJudged = false;
+        // 単語リスト（全リスト）
+        let wordList = [
+            { "japanese": "一段落",   "yomikata": "いちだんらく",     "explanation": "物事が一応まとまって落ち着くこと。" },
+            { "japanese": "代替",     "yomikata": "だいたい",         "explanation": "あるものを他のものに代えること。" },
+            { "japanese": "貼付",     "yomikata": "ちょうふ",         "explanation": "物に紙や布を張り付けること。" },
+            { "japanese": "凡例",     "yomikata": "はんれい",         "explanation": "書物の初めにある、その内容や用語の使い方の説明。" },
+            { "japanese": "早急",     "yomikata": "さっきゅう",       "explanation": "非常に急ぐこと、至急。" },
+            { "japanese": "五月雨",   "yomikata": "さみだれ",         "explanation": "旧暦5月頃に降り続く長雨のこと。梅雨を表す言葉としても使われ、日本の四季の風情を示します。" },
+            { "japanese": "依存",     "yomikata": "いぞん",           "explanation": "他に頼ること、自立せず何かに頼りきること。心理学や社会学の分野でも用いられる表現です。" },
+            { "japanese": "過日",     "yomikata": "かじつ",           "explanation": "過去のある日を指す表現。「先日」や「この間」と同じ意味で、形式的な文章でよく使われます。" },
+            { "japanese": "粗品",     "yomikata": "そしな",           "explanation": "贈り物をへりくだって表現する言葉。相手への謙遜や礼儀を示す日本特有の文化的表現です。" },
+            { "japanese": "供養",     "yomikata": "くよう",           "explanation": "亡くなった方や祖先の霊に祈りや供え物を捧げること。仏教の習慣に基づく儀礼の一つです。" },
+            { "japanese": "茨城",     "yomikata": "いばらき",         "explanation": "関東地方にある日本の県名。「いばらぎ」と間違えられることが多いですが、正しくは「いばらき」です。" },
+            { "japanese": "疾病",     "yomikata": "しっぺい",         "explanation": "病気や疾患を意味します。主に医学的な文脈や公的な文章で用いられる表現です。" },
+            { "japanese": "訃報",     "yomikata": "ふほう",           "explanation": "人の死を知らせること。また、その知らせ自体を指します。形式的な言葉として弔事で使われます。" },
+            { "japanese": "続柄",     "yomikata": "つづきがら",       "explanation": "本人との関係性を表す言葉。例えば、「父」「母」「兄弟」などのように続柄を明示します。" },
+            { "japanese": "遵守",     "yomikata": "じゅんしゅ",       "explanation": "決まりやルールをしっかり守ること。法律や規範を尊重して従うことを意味します。" },
+            { "japanese": "進捗",     "yomikata": "しんちょく",       "explanation": "物事がどれだけ進んでいるかを示す言葉。主に仕事や計画の進行状況を指します。" },
+            { "japanese": "相殺",     "yomikata": "そうさい",         "explanation": "お互いの利益や損失を打ち消し合うこと。特に会計や取引の場面で使われます。" },
+            { "japanese": "月極",     "yomikata": "つきぎめ",         "explanation": "1か月単位で料金や契約を決めること。駐車場や賃貸契約でよく見られる表現です。" },
+            { "japanese": "重複",     "yomikata": "ちょうふく",       "explanation": "同じ物事が繰り返されること。書類や情報が重なっている状態を指します。" },
+            { "japanese": "雰囲気",   "yomikata": "ふんいき",         "explanation": "その場の全体的な空気やムード。人や場所が持つ独特な感じを指します。" },
+            { "japanese": "希少",     "yomikata": "きしょう",         "explanation": "非常に珍しいこと。資源や商品が限られている状況を表すこともあります。" },
+            { "japanese": "逝去",     "yomikata": "せいきょ",         "explanation": "人が亡くなること。特に敬意を込めて使われる表現です。" },
+            { "japanese": "格段",     "yomikata": "かくだん",         "explanation": "他と比べて大きく違うこと。際立って優れている、または劣っている様子を指します。" },
+            { "japanese": "風邪",     "yomikata": "かぜ",             "explanation": "喉の痛みや鼻水、熱などを伴う一般的な病気。ウイルス感染が主な原因です。" },
+            { "japanese": "固執",     "yomikata": "こしつ",           "explanation": "自分の考えや行動に強くこだわること。しばしば頑固さを伴う場合に使われます。" },
+            { "japanese": "如実",     "yomikata": "にょじつ",         "explanation": "物事をそのままの形で、ありのままに示すこと。本当の状態を表現する際に用います。" },
+            { "japanese": "情緒",     "yomikata": "じょうちょ",       "explanation": "人の心の動きや、その場の雰囲気による感情の変化を指します。" },
+            { "japanese": "廉価",     "yomikata": "れんか",           "explanation": "安い価格。コストパフォーマンスが良いことを指す場合もあります。" },
+            { "japanese": "稟議",     "yomikata": "りんぎ",           "explanation": "組織内で文書を回覧し、承認を得ること。特に日本の企業文化で用いられる手法です。" },
+            { "japanese": "相俟って", "yomikata": "あいま",           "explanation": "二つ以上の物事が互いに作用し合って、さらに良い結果や影響を生むこと。" },
+            { "japanese": "白眉",     "yomikata": "はくび",           "explanation": "多くの中で最も優れているものや人物を指します。" },
+            { "japanese": "矢面",     "yomikata": "やおもて",         "explanation": "批判や攻撃を直接受ける立場。困難に直面している様子を指します。" },
+            { "japanese": "割愛",     "yomikata": "かつあい",         "explanation": "惜しいと思いながら省略すること。または、必要以上にこだわらずに手放すこと。" },
+            { "japanese": "故障",     "yomikata": "こしょう",         "explanation": "機械や設備が正常に動かなくなること。障害や不具合を指します。" },
+            { "japanese": "端数",     "yomikata": "はすう",           "explanation": "割り切れずに余った部分。小数点以下の値などを指します。" },
+            { "japanese": "博打",     "yomikata": "ばくち",           "explanation": "賭け事やギャンブルのこと。運や確率に頼る勝負事を指します。" },
+            { "japanese": "興す",     "yomikata": "おこ",             "explanation": "新しい事業や活動を始めること。再び活気づける意味でも使われます。" },
+            { "japanese": "親不知",   "yomikata": "おやしらず",       "explanation": "第三大臼歯と呼ばれる歯。成長する際に痛みを伴う場合があり、よく抜歯の対象になります。" },
+            { "japanese": "嗜好品",   "yomikata": "しこうひん",       "explanation": "生活に必需ではないが、楽しみや嗜好のために消費するもの。例として、コーヒーや酒などがあります。" },
+            { "japanese": "昔日",     "yomikata": "せきじつ",         "explanation": "昔のこと。懐かしさや過去の記憶を振り返る際に用いられる表現です。" },
+            { "japanese": "刺客",     "yomikata": "しかく",           "explanation": "暗殺や重要人物を狙うために送り込まれる人物を指します。" },
+            { "japanese": "飛蚊症",   "yomikata": "ひぶんしょう",     "explanation": "目の中に浮遊物が見える状態。加齢や目の病気が原因で発生することがあります。" },
+            { "japanese": "憂い",     "yomikata": "うれ",             "explanation": "悲しみや心配など、心が晴れない状態を指します。古くから文学表現でも多く使われる言葉です。" },
+            { "japanese": "年俸",     "yomikata": "ねんぽう",         "explanation": "1年間の仕事に対して支払われる報酬や給与のことを指します。主にスポーツ選手や高所得者の給与で用いられることが多いです。" },
+            { "japanese": "過不足",   "yomikata": "かふそく",         "explanation": "過剰であることや不足していることを合わせて指します。ちょうど良い状態でないことを表します。" },
+            { "japanese": "暫く",     "yomikata": "しばら",           "explanation": "短い時間や期間を指し、少しの間という意味を持ちます。文脈により、数分から数日を指す場合があります。" },
+            { "japanese": "漸く",     "yomikata": "ようや",           "explanation": "長い時間をかけてやっと何かを成し遂げた様子を表します。『ついに』や『なんとか』と近いニュアンスがあります。" },
+            { "japanese": "暫時",     "yomikata": "ざんじ",           "explanation": "短い時間やしばらくの間を指します。比較的かしこまった場面で使われることが多い表現です。" },
+            { "japanese": "角逐",     "yomikata": "かくちく",         "explanation": "互いに競争や争いをすることを指します。主に権力や地位などを巡る競り合いに使われます。" },
+            { "japanese": "委嘱",     "yomikata": "いしょく",         "explanation": "特定の仕事や役割を正式に依頼して任せることを指します。法律や契約の場面で使われることが多い言葉です。" },
+            { "japanese": "世論",     "yomikata": "よろん",           "explanation": "社会全体の人々の意見や考え方を指します。特に政治や社会問題における多くの人々の意見を表す言葉です。" },
+            { "japanese": "出生",     "yomikata": "しゅっしょう",     "explanation": "人が生まれること、またはその時の状況を指します。戸籍や医療の文脈で使われることが多いです。" },
+            { "japanese": "舌鼓",     "yomikata": "したつづみ",       "explanation": "美味しいものを食べたときに自然と舌を鳴らすことを指します。満足感を伴う表現です。" },
+            { "japanese": "あり得る", "yomikata": "う",               "explanation": "実際に起こる可能性があるという意味を持つ言葉です。論理的に可能である場合に使われます。" },
+            { "japanese": "職人気質", "yomikata": "しょくにんがたき", "explanation": "職人が持つ特有の誇りや気質を指します。細部にまでこだわる真摯な姿勢を表します。" },
+            { "japanese": "蔑ろ",     "yomikata": "ないがし",         "explanation": "物事や人を軽視したり、いい加減に扱うことを指します。相手を尊重しない態度を表します。" },
+            { "japanese": "ご用達",   "yomikata": "ようたし",         "explanation": "特定の人や組織のために特別に提供される商品やサービスを指します。特に皇室などへの納品に用いられます。" },
+            { "japanese": "吹聴",     "yomikata": "ふいちょう",       "explanation": "物事を広く言いふらすことを指します。多くの場合、自分に都合の良い話を誇張して広めるニュアンスを含みます。" },
+            { "japanese": "軍配",     "yomikata": "ぐんぱい",         "explanation": "戦いや競技などでの勝敗の判断を指します。相撲では行司が勝敗を決める道具を指すこともあります。" },
+            { "japanese": "斜向かい", "yomikata": "はすむ",           "explanation": "ある場所から斜めに向かい合う位置を指します。建物や座席の配置を表現する際によく使われます。" },
+            { "japanese": "著す",     "yomikata": "あらわ",           "explanation": "本や文章を執筆して出版することを指します。学術書や文学作品などで使われることが多いです。" },
+            { "japanese": "如才",     "yomikata": "じょさい",         "explanation": "気配りがあり、抜け目のない様子を指します。特に対人関係における巧みな振る舞いを表します。" },
+            { "japanese": "裾野",     "yomikata": "すその",           "explanation": "山の下の広がった部分を指します。比喩的に、基盤や広がりを指す場合にも使われます。" },
+            { "japanese": "旋毛",     "yomikata": "つむじ",           "explanation": "頭髪が渦を巻いている部分を指します。『旋毛を曲げる』は怒ることの表現として使われることもあります。" },
+            { "japanese": "役務",     "yomikata": "えきむ",           "explanation": "業務や労働など、特定の責任や仕事を指します。主に法律や契約の文脈で使われます。" },
+            { "japanese": "言質",     "yomikata": "げんち",           "explanation": "相手の発言を証拠や根拠として利用できることを指します。約束や確約の言葉として捉えられます。" },
+            { "japanese": "押印",     "yomikata": "おういん",         "explanation": "書類などに印鑑を押す行為を指します。正式な承認や同意の証拠として用いられます。" },
+            { "japanese": "伝播",     "yomikata": "でんぱ",           "explanation": "情報や影響などが広がることを指します。特に文化やウイルスの拡散について使われることが多いです。" },
+            { "japanese": "奇しくも", "yomikata": "く",               "explanation": "偶然にも、思いがけずそうなったことを表す言葉です。珍しい状況に対して使われます。" },
+            { "japanese": "杜撰",     "yomikata": "ずさん",           "explanation": "物事が雑でいい加減であることを指します。注意不足や計画性の欠如を批判する際に用いられます。" },
+            { "japanese": "出来する", "yomikata": "しゅったい",       "explanation": "事件や問題などが発生することを意味します。公式な場面で使われる表現です。" },
+            { "japanese": "ご利益",   "yomikata": "りやく",           "explanation": "神仏の加護による恩恵や幸福を指します。神社仏閣を参拝する目的の一つです。" },
+            { "japanese": "他人事",   "yomikata": "ひとごと",         "explanation": "自分には関係ない、他人に関わる事柄を指します。無関心な態度を表す場合にも用いられます。" },
+            { "japanese": "造詣",     "yomikata": "ぞうけい",         "explanation": "特定の分野に対する深い知識や理解を指します。学術や芸術の領域でよく使われる言葉です。" },
+            { "japanese": "境内",     "yomikata": "けいだい",         "explanation": "神社や寺院の敷地内を指します。参拝者が立ち入れる場所を含む場合が多いです。" },
+        ];
+
+        // シャッフルしてランダムに10個抽出
+        let randomWordList = wordList.sort(() => Math.random() - 0.5).slice(0, 10);
+
+        // クイズを開始する
+        function startQuiz() {
+            score = 0;  // スコアをリセット
+            no = 0;  // 問題番号をリセット
+            document.getElementById("startButton").style.display = "none"; // スタートボタンを非表示
+            document.getElementById("title").innerHTML = "";
+            document.getElementById("answerForm").style.display = "block"; // 答え入力フォームを表示
+            document.getElementById("enterkey").innerHTML = "エンターキーを押して次に進む";
+            document.getElementById("resultMessage").innerHTML = ""; // 結果メッセージをクリア
+            document.getElementById("feedback").innerHTML = ""; // フィードバックをクリア
+            document.getElementById("resultButtons").style.display = "none"; // 結果ボタンを非表示
+            randomWordList = wordList.sort(() => Math.random() - 0.5).slice(0, 10); // 単語リストをリセット
+            showQuestion(); // 最初の問題を表示
+            document.getElementById("answer").focus(); // 入力フィールドにフォーカス
+        }
+
+        // 問題を表示する
+        function showQuestion() {
+            if (no < randomWordList.length) {
+                document.getElementById("question").innerHTML = randomWordList[no].japanese;
+                document.getElementById("feedback").innerHTML = ""; // フィードバックをクリア
+                document.getElementById("progress").innerHTML = "第 " + (no + 1) + " 問 / 全 " + randomWordList.length + " 問"; // 問題進行状況を表示
+                startTimer(); // タイマー開始
+                isJudged = false; // 新しい問題で判定がまだされていない
+            } else {
+                endQuiz();
+            }
+        }
+
+        // クイズ終了時の処理
+        function endQuiz() {
+            document.getElementById("question").innerHTML = score + "/" + randomWordList.length + " 正解";
+            document.getElementById("answerForm").style.display = "none";
+            document.getElementById("timer").innerHTML = "";
+            document.getElementById("feedback").innerHTML = "";
+            document.getElementById("resultButtons").style.display = "block"; // 結果後に「もう一度」と「初めに戻る」を表示
+            if (score == randomWordList.length) {
+                document.getElementById("resultMessage").innerHTML = "全問正解！よくできました！";
+            } else if (score >= randomWordList.length * 0.6) {
+                document.getElementById("resultMessage").innerHTML = "惜しい！あともう一歩でした！";
+            } else {
+                document.getElementById("resultMessage").innerHTML = "もう少しがんばりましょう。";
+            }
+        }
+
+        // タイマーを開始
+        function startTimer() {
+            timeLeft = 10;
+            document.getElementById("timer").innerHTML = "残り時間: " + timeLeft + "秒";
+            timer = setInterval(function() {
+                timeLeft--;
+                document.getElementById("timer").innerHTML = "残り時間: " + timeLeft + "秒";
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    judge(false); // 時間切れの場合は不正解
+                }
+            }, 1000);
+        }
+
+        // 回答を判定する関数を修正
+        function judge(isManual = true) {
+            if (isJudged) return; // すでに判定済みの場合は何もしない
+            clearInterval(timer); // タイマーを停止
+            let answer = document.getElementById("answer").value;
+            let feedback = "";
+
+            // 現在の問題のデータ
+            const currentWord = randomWordList[no];
+
+            if (isManual && answer === currentWord.yomikata) {
+                feedback = "<span style='font-size: 2em; color: red;'>正解です！</span>";
+                score++;
+            } else if (!isManual) {
+                feedback = "<span style='font-size: 2em; color: yellow;'>時間切れ！</span><br>正解は「" + currentWord.yomikata + "」です。";
+                document.getElementById("answer").disabled = true; // 解答欄を無効化
+            } else {
+                feedback = "<span style='font-size: 2em; color: blue;'>不正解です。</span><br>正解は「" + currentWord.yomikata + "」です。";
+            }
+
+            // 解説を追加
+            feedback += "<br><span style='font-size: 1em; color: black;'>解説: " + currentWord.explanation + "</span>";
+
+            document.getElementById("feedback").innerHTML = feedback; // フィードバックを画面に表示
+
+            no++;
+            isJudged = true; // 判定が行われたことを記録
+
+            document.getElementById("answer").value = ""; // 入力欄をクリア
+        }
+        
+        function showQuestion() {
+            if (no < randomWordList.length) {
+                document.getElementById("question").innerHTML = randomWordList[no].japanese;
+                document.getElementById("feedback").innerHTML = ""; // フィードバックをクリア
+                document.getElementById("progress").innerHTML = "第 " + (no + 1) + " 問 / 全 " + randomWordList.length + " 問          "; // 問題進行状況を表示
+                document.getElementById("answer").disabled = false; // 解答欄を有効化
+                document.getElementById("answer").focus(); // 入力フィールドにフォーカス
+                startTimer(); // タイマー開始
+                isJudged = false; // 新しい問題で判定がまだされていない
+            } else {
+                endQuiz();
+            }
+        }
+
+
+        document.addEventListener("keydown", function(event) {
+            if (event.key === "Enter" && document.getElementById("answerForm").style.display === "block") {
+                if (isJudged) {
+                    showQuestion(); // 判定後であれば次の問題を表示
+                } else {
+                    judge(); // 判定が終わっていなければ回答判定
+                }
+            }
+        });
+
+       // 初めに戻る
+        function goToStart() {
+            document.getElementById("title").innerHTML = "漢字クイズ"
+            document.getElementById("question").innerHTML = ""
+            clearInterval(timer); // タイマーをクリア
+            document.getElementById("resultButtons").style.display = "none"; // ボタン非表示
+            document.getElementById("startButton").style.display = "block"; // スタートボタン表示
+            document.getElementById("progress").innerHTML = "全10問"; // 進行状況を初期表示に戻す
+            document.getElementById("timer").innerHTML = "制限時間10秒／問"; // タイマー表示をリセット
+            document.getElementById("resultMessage").innerHTML = ""; // 結果メッセージをクリア
+            document.getElementById("feedback").innerHTML = ""; // フィードバックをクリア
+        }
+    </script>
+</head>
+<body>
+    <h1 id="title">漢字クイズ</h1>
+
+    <!-- 問題進行状況を表示するエリア -->
+    <div id="progress">全10問</div>
+
+    <div id="question"></div>
+
+    <!-- タイマー表示 -->
+    <p id="timer">制限時間10秒／問</p>
+
+    <!-- スタートボタン -->
+    <button id="startButton" onclick="startQuiz()" style="display: block; margin: 20px auto;">スタート</button>
+
+    <!-- 回答フォーム -->
+    <div id="answerForm" style="display:none;">
+        <input type="text" id="answer" placeholder="読みを入力" lang="ja" inputmode="kana" autocomplete="off" />
+        <div id="enterkey"></div>
+    </div>
+
+    <!-- 正解・不正解のフィードバック表示 -->
+    <p id="feedback"></p>
+
+    <p id="resultMessage"></p>
+
+    <!-- もう一度ボタンと初めに戻るボタン -->
+    <div id="resultButtons" style="display:none;">
+        <button id="MI" onclick="startQuiz()">もう一度</button>
+        <button id="HM" onclick="goToStart()">初めに戻る</button>
+    </div>
+</body>
+</html>
